@@ -1,0 +1,13 @@
+extends layout.pug
+
+block content
+    h1
+        | Bult Client
+    if running
+        form(action="bot/stop" method="POST")
+            button(type="submit")
+                | Stop Bot
+    else
+        form(action="bot/start" method="POST")
+            button(type="submit")
+                | Start Bot

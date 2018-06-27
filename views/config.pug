@@ -1,0 +1,64 @@
+extends layout.pug
+
+block content
+    h1.section-title
+        span Bot Configuration
+    ol.breadcrumb.text-left
+        li
+            a(href='/') Dashboard
+        li.active Bot Configuration
+
+    if saved
+        .alert.alert-success.alert-dismissible(role='alert')
+            button.close(aria-label='Close', data-dismiss='alert', type='button')
+                span(aria-hidden='true') ×
+            |     The environment file has been saved.
+
+
+    .section.section-custom.billinfo
+        h2
+            | Environment Settings
+        form(action='/config', method='post')
+            .pmd-card.pmd-z-depth
+                .pmd-card-body
+                    .group-fields.clearfix.row
+                        .col-lg-12.col-md-12.col-sm-12.col-xs-12
+                            .form-group.pmd-textfield.pmd-textfield-floating-label
+                                label.control-label(for='userId')
+                                    | User ID*
+                                input#userId.form-control(type='text', name='userId', value=env.USER_ID, required='')
+                                span.pmd-textfield-focused
+                .pmd-card-body
+                    .group-fields.clearfix.row
+                        .col-lg-12.col-md-12.col-sm-12.col-xs-12
+                            .form-group.pmd-textfield.pmd-textfield-floating-label
+                                label.control-label(for='botKey')
+                                    | Bot Key*
+                                input#botKey.form-control(type='text', name='botKey', value=env.BOT_KEY, required='')
+                                span.pmd-textfield-focused
+                .pmd-card-body
+                    .group-fields.clearfix.row
+                        .col-lg-12.col-md-12.col-sm-12.col-xs-12
+                            .form-group.pmd-textfield.pmd-textfield-floating-label
+                                label.control-label(for='botSecret')
+                                    | Bot Secret*
+                                input#botSecret.form-control(type='text', name='botSecret', value=env.BOT_SECRET, required='')
+                                span.pmd-textfield-focused
+                .pmd-card-body
+                    .group-fields.clearfix.row
+                        .col-lg-12.col-md-12.col-sm-12.col-xs-12
+                            .form-group.pmd-textfield.pmd-textfield-floating-label
+                                label.control-label(for='commandPrefix')
+                                    | Command Prefix*
+                                input#commandPrefix.form-control(type='text', name='commandPrefix', value=env.COMMAND_PREFIX, required='')
+                                span.pmd-textfield-focused
+                .pmd-card-body
+                    .group-fields.clearfix.row
+                        .col-lg-12.col-md-12.col-sm-12.col-xs-12
+                            .form-group.pmd-textfield.pmd-textfield-floating-label
+                                label.control-label(for='addonFolder')
+                                    | Addon Folder*
+                                input#addonFolder.form-control(type='text', name='addonFolder', value=env.ADDON_FOLDER, required='')
+                                span.pmd-textfield-focused
+                .pmd-card-actions
+                    button.btn.btn-primary.next(type='submit') Save

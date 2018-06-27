@@ -1,0 +1,6 @@
+chatbot/
+node_modules/
+addons/
+logs/
+.env
+dist/

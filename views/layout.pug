@@ -1,0 +1,72 @@
+doctype html
+html(lang='')
+  head
+    meta(charset='utf-8')
+    meta(http-equiv='X-UA-Compatible', content='IE=edge')
+    meta(name='description', content='Bult')
+    meta(content='width=device-width, initial-scale=1, user-scalable=no', name='viewport')
+    title Bult - #{title}
+    link(rel='shortcut icon', type='image/x-icon', href='favicon.ico')
+    // Google icon
+    link(href='https://fonts.googleapis.com/icon?family=Material+Icons', rel='stylesheet')
+    // Bootstrap css
+    link(rel='stylesheet', type='text/css', href='http://a.blackwidowcdn.com/bult/site/assets/css/bootstrap.min.css')
+    // Propeller css
+    link(rel='stylesheet', type='text/css', href='http://a.blackwidowcdn.com/bult/site/assets/css/propeller.min.css')
+    // Propeller theme css
+    link(rel='stylesheet', type='text/css', href='http://a.blackwidowcdn.com/bult/site/themes/css/propeller-theme.css')
+    // Propeller admin theme css
+    link(rel='stylesheet', type='text/css', href='http://a.blackwidowcdn.com/bult/site/themes/css/propeller-admin.css')
+
+    block head
+  body
+    nav.navbar.navbar-inverse.navbar-fixed-top.pmd-navbar.pmd-z-depth
+      .container-fluid
+        .pmd-navbar-right-icon.pull-right.navigation
+        .navbar-header
+          a.btn.btn-sm.pmd-btn-fab.pmd-btn-flat.pmd-ripple-effect.pull-left.margin-r8.pmd-sidebar-toggle(href='javascript:void(0);', data-target='basicSidebar', data-placement='left', data-position='slidepush', is-open='true', is-open-width='1200')
+            i.material-icons.md-light menu
+          a.navbar-brand(href='/')
+            span Bult
+    .pmd-sidebar-overlay
+    aside#basicSidebar.pmd-sidebar.sidebar-default.pmd-sidebar-slide-push.pmd-sidebar-left.pmd-sidebar-open.bg-fill-darkblue.sidebar-with-icons(role='navigation')
+      ul.nav.pmd-sidebar-nav
+        li
+          a.pmd-ripple-effect(href='/')
+            span.media-body Dashboard
+        li
+          a.pmd-ripple-effect(href='/config')
+            span.media-body Configuration
+    #content.pmd-content.inner-page
+      // tab start
+      .container-fluid.full-width-container.blank
+        block content
+      // tab end
+    footer.admin-footer
+      .container-fluid
+        ul.list-unstyled.list-inline
+          li
+            span.pmd-card-subtitle-text
+              | Marked Bots © 
+              span.auto-update-year
+              | . All Rights Reserved.
+          li.pull-right.for-support
+            a(href='mailto:support@markedbots.com')
+              div
+                span.pmd-card-subtitle-text For Support
+                h3.pmd-card-title-text support@markedbots.com
+    script(src='http://a.blackwidowcdn.com/bult/site/assets/js/jquery-1.12.2.min.js')
+    script(src='http://a.blackwidowcdn.com/bult/site/assets/js/bootstrap.min.js')
+    script(src='http://a.blackwidowcdn.com/bult/site/assets/js/propeller.min.js')
+    script.
+      $(document).ready(function() {
+      var sPath=window.location.pathname;
+      var sPage = sPath.substring(sPath.lastIndexOf('/') + 1);
+      $(".pmd-sidebar-nav").each(function(){
+      $(this).find("a[href='"+sPage+"']").parents(".dropdown").addClass("open");
+      $(this).find("a[href='"+sPage+"']").parents(".dropdown").find('.dropdown-menu').css("display", "block");
+      $(this).find("a[href='"+sPage+"']").parents(".dropdown").find('a.dropdown-toggle').addClass("active");
+      $(this).find("a[href='"+sPage+"']").addClass("active");
+      });
+      $(".auto-update-year").html(new Date().getFullYear());
+      });

@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+html(lang="en")
+    head
+        meta(charset="UTF-8")
+        meta(name="viewport", content="width=device-width, initial-scale=1.0")
+        meta(http-equiv="X-UA-Compatible", content="ie=edge")
+        title Bult Installer
+        style(type="text/css").
+            body {
+                background:#2c3e50;
+                font-family: 'Open Sans', sans-serif;
+                overflow: hidden;
+                text-align: center;
+                color: #fff;
+            }
+
+            .container {
+                position: absolute;
+                top: 42%;
+                left: 42%;
+            }
+
+            .button-two {
+                border-radius: 4px;
+                background-color: #0097FB;
+                border: none;
+                padding: 20px;
+                width: 200px;
+                transition: all 0.5s;
+                text-align: center;
+                cursor: pointer;
+                font-size:24px;
+                color: #fff;
+            }
+
+
+            .button-two span {
+                cursor: pointer;
+                display: inline-block;
+                position: relative;
+                transition: 0.5s;
+            }
+
+            .button-two span:after {
+                content: '»';
+                position: absolute;
+                opacity: 0;
+                top: 0;
+                right: -20px;
+                transition: 0.5s;
+            }
+
+            .button-two:hover span {
+                padding-right: 25px;
+            }
+
+            .button-two:hover span:after {
+                opacity: 1;
+                right: 0;
+            }
+
+            .dot {
+                position: absolute;
+                width: 10px;
+                height: 10px;
+                border-radius: 20px;
+                top: 50%;
+                background-color: #0097FB;
+                -webkit-transform: translate(0, -50%);
+                        transform: translate(0, -50%);
+                -webkit-animation: 3s linear loader infinite;
+                        animation: 3s linear loader infinite;
+            }
+
+            .dot:nth-of-type(1) {
+                left: 0px;
+            }
+
+            .dot:nth-of-type(2) {
+                left: -10px;
+                -webkit-animation-delay: 0.15s;
+                        animation-delay: 0.15s;
+            }
+
+            .dot:nth-of-type(3) {
+                left: -20px;
+                -webkit-animation-delay: 0.3s;
+                        animation-delay: 0.3s;
+            }
+
+            .dot:nth-of-type(4) {
+                left: -30px;
+                -webkit-animation-delay: 0.45s;
+                        animation-delay: 0.45s;
+            }
+
+            .dot:nth-of-type(5) {
+                left: -40px;
+                -webkit-animation-delay: 0.60s;
+                        animation-delay: 0.60s;
+            }
+
+            @-webkit-keyframes loader {
+                0%, 20% {
+                    -webkit-transform: translate(0, -50%);
+                            transform: translate(0, -50%);
+                    opacity: 0;
+                }
+                35% {
+                    -webkit-transform: translate(45vw, -50%);
+                            transform: translate(45vw, -50%);
+                    opacity: 1;
+                }
+                65% {
+                    -webkit-transform: translate(55vw, -50%);
+                            transform: translate(55vw, -50%);
+                    opacity: 1;
+                }
+                80%, 100% {
+                    -webkit-transform: translate(100vw, -50%);
+                            transform: translate(100vw, -50%);
+                    opacity: 0;
+                }
+            }
+
+            @keyframes loader {
+                0%, 20% {
+                    -webkit-transform: translate(0, -50%);
+                            transform: translate(0, -50%);
+                    opacity: 0;
+                }
+                35% {
+                    -webkit-transform: translate(45vw, -50%);
+                            transform: translate(45vw, -50%);
+                    opacity: 1;
+                }
+                65% {
+                    -webkit-transform: translate(55vw, -50%);
+                            transform: translate(55vw, -50%);
+                    opacity: 1;
+                }
+                80%, 100% {
+                    -webkit-transform: translate(100vw, -50%);
+                            transform: translate(100vw, -50%);
+                    opacity: 0;
+                }
+            }
+
+    body
+        .container#installButton
+            button.button-two(onClick="install()" style="")
+                span
+                    | Install Bult
+            br
+            br
+            small
+                | The install can take a while 
+                br
+                | depending on your internet speed.
+
+        #installed(hidden="true" style="position:absolute; top:10%; left: 15%; text-align: left;")
+            h1 Bult Installed
+            p.
+                Bult has been installed correctly. You may now continue to the dashboard.
+            br
+            br
+            a.button-two(href="/")
+                span
+                    | Bult Dashboard
+
+
+        #installing(hidden="true")
+            div(style="position:absolute; top:10%; left: 15%; text-align: left;")
+                h1 Installing Bult
+                p.
+                    The install process will download the latest executable of ChatBotCE from
+                    Marked Bots.
+                p.
+                    The next step will be to create the addons directory, and create a basic environment
+                    file (bot configuration) for Bult to use.
+                p.
+                    Once that is done, you'll be redirected to the dashboard page and you'll never see
+                    this page again.
+            div
+                .dot
+                .dot
+                .dot
+                .dot
+                .dot
+    
+        script(src='http://a.blackwidowcdn.com/bult/site/assets/js/jquery-1.12.2.min.js')
+        script.
+            function install() {
+                $("#installButton").remove();
+                $("#installing").removeAttr("hidden");
+
+                $.post("/install", (data) => {
+                    console.log(data);
+
+                    $("#installing").remove();
+                    $("#installed").removeAttr("hidden");
+                });
+            }
