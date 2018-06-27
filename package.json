@@ -2,12 +2,20 @@
   "name": "bultclient",
   "version": "1.0.0-beta",
   "description": "The Bult Client",
-  "main": "app.js",
+  "private": true,
+  "main": "dist/App",
+  "typings": "dist/App",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "clean": "rm -rf ./dist/*",
+    "start": "node ./dist/App",
+    "compile": "tsc -p ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BultApp/Client.git"
   },
   "author": "MarkedBots",
-  "license": "UNLICENSED",
   "dependencies": {
     "@types/dotenv": "^4.0.3",
     "@types/express": "^4.16.0",
