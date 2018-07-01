@@ -2,6 +2,9 @@
 ## About
 TODO
 
+## Installation/Packaging
+TODO
+
 ## Contributions
 TODO
 

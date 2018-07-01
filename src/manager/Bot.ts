@@ -1,5 +1,11 @@
 import * as lockfile from "lockfile"
 import * as child from "child_process";
+import * as touch from "touch";
+import * as mkdirp from "mkdirp";
+import * as path from "path";
+import * as fs from "fs";
+let axios = require("axios");
+let fileExists = require("file-exists");
 
 export class Bot
 {
@@ -22,7 +28,7 @@ export class Bot
                 return false;
             }
 
-            this.instance = child.spawn("./chatbot/ChatBotCE");
+            this.instance = (process.platform == "linux") ? child.spawn("./chatbot/ChatBotCE") : child.spawn("./chatbot/ChatBotCE.exe");
             console.log("Process ID: " + this.instance.pid);
 
             return true;
@@ -69,34 +75,95 @@ export class Bot
 
 export class Installer 
 {
-    public install(): boolean
+    public install(): Promise<any>
     {
-        lockfile.lock("./installed.lock", (err: Error) => {
-            if(err) {
-                return false;
-            }
+        return new Promise((resolve, reject) => {
+            mkdirp("./chatbot", (err) => {
+                if(err) {
+                    console.log(err);
+                    reject(err);
+                }
+            });
+    
+            let isWin = (process.platform == "win32");
 
-            return true;
+            axios("https://api.github.com/repos/MarkedBots/ChatBot-CE/releases/latest")
+                .then((response: any) => {
+                    console.log("Got the latest release. Looping through assets.");
+                    response.data.assets.forEach((asset: any) => {
+                        console.log("Checking asset: " + asset.name);
+                        if(isWin) {
+                            if(asset.name.toLowerCase().indexOf("windows") > 0) {
+                                this.downloadAsset(asset.browser_download_url, "ChatBotCE.exe","./chatbot")
+                                .catch(err => {
+                                    reject(err);
+                                });
+                            }
+                        } else {
+                            if(asset.name.toLowerCase().indexOf("linux") > 0) {
+                                this.downloadAsset(asset.browser_download_url, "ChatBotCE","./chatbot")
+                                    .catch(err => {
+                                        reject(err);
+                                    });
+                            }
+                        }
+
+                        if(asset.name.toLowerCase() == "env.example") {
+                            this.downloadAsset(asset.browser_download_url, ".env", "./")
+                                .catch(err => {
+                                    reject(err);
+                                });
+                        }
+                    });
+
+                    mkdirp("./addons", (err) => {
+                        if(err) {
+                            reject(err);
+                        }
+                    });
+
+                    touch("./installed.lock").then(() => {
+                        resolve(true);
+                    }).catch((err) => {
+                        reject(err);
+                    });
+                })
+                .catch((err: any) => {
+                    reject(err);
+                });
         });
-
-        return false;
     }
 
     public uninstall(): boolean
     {
-        lockfile.unlock("./installed.lock", (err: Error) => {
-            if(err) {
-                return false;
-            }
-
-            return true;
-        });
-
         return false;
     }
 
     public installed(): boolean
     {
-        return lockfile.checkSync("./chatbot/bot.lock");
+        return fileExists.sync("./installed.lock");
+    }
+
+    private async downloadAsset(url: string, filename: string, filepath: string): Promise<any>
+    {
+        filepath = path.resolve(filepath, filename);
+
+        let response = await axios({
+            method: "GET",
+            url: url,
+            responseType: "stream",
+        });
+
+        response.data.pipe(fs.createWriteStream(filepath));
+
+        return new Promise((resolve, reject) => {
+            response.data.on('end', () => {
+                resolve()
+            })
+        
+            response.data.on('error', () => {
+                reject()
+            })
+        });
     }
 }

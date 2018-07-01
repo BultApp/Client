@@ -10,6 +10,7 @@ const multer = require('multer');
 const upload = multer();
 const express = require("express");
 const app = express();
+const path = require("path");
 
 import { Bot, Installer } from "./manager/Bot";
 
@@ -18,21 +19,29 @@ let InstallerManager: Installer = new Installer();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(unless("/install", (req: any, res: any, next: any) => {
-    if(InstallerManager.installed()) {
+app.use((req: any, res: any, next: any) => {
+    if(req.path == "/install") {
+        if(InstallerManager.installed()) {
+            res.redirect("/");
+        } else {
+            next();
+        }
+    } else if(InstallerManager.installed()) {
         next();
+    } else {
+        res.redirect("/install");
     }
-
-    res.redirect("/install");
-}));
+});
 
 app.set("view engine", "pug");
-app.set("views", "./views");
+app.set("views", path.join(__dirname, "..","views"));
 
 app.get("/", (req: any, res: any) => {
     res.render("index", {
         title: "Dashboard",
         running: BotManager.running(),
+        started: (req.query.started != undefined),
+        stopped: (req.query.stopped != undefined),
     });
 });
 
@@ -41,17 +50,17 @@ app.get("/install", (req: any, res: any) => {
 });
 
 app.post("/install", upload.array(), (req: any, res: any) => {
-    setTimeout(() =>  {
-        if(InstallerManager.install()) {
-            res.json({
-                installed: true
-            });
-        } else {
-            res.json({
-                installed: false
-            })
-        }
-    }, 5000);
+    InstallerManager.install().then(() => {
+        res.json({
+            installed: true
+        })
+    }).catch((err) => {
+        console.log(err);
+        res.json({
+            installed: false,
+            error: err,
+        });
+    });
 });
 
 app.post("/bot/start", upload.array(), (req: any, res: any) => {

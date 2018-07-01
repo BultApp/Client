@@ -4,3 +4,4 @@ addons/
 logs/
 .env
 dist/
+*.lock
