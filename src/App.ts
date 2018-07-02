@@ -3,7 +3,6 @@ require("dotenv").config({
 });
 
 var console: Console = require("better-console");   
-const fs = require("fs");
 const dotenv = require("dotenv");
 const bodyParser = require('body-parser');
 const multer = require('multer');
@@ -12,7 +11,9 @@ const express = require("express");
 const app = express();
 const path = require("path");
 
+import * as fs from "fs";
 import { Bot, Installer } from "./manager/Bot";
+import { FileManager } from "./manager/File";
 
 let BotManager: Bot = new Bot();
 let InstallerManager: Installer = new Installer();
@@ -77,6 +78,30 @@ app.post("/bot/stop", upload.array(), (req: any, res: any) => {
     } else {
         res.redirect("/")
     }
+});
+
+app.get("/addons", (req: any, res: any) => {
+    let addons: any = {};
+    let folders = FileManager.getFolders(path.join(__dirname, "..", "addons"));
+
+    folders.forEach((name) => {
+        addons[name] = {};
+
+        let files = fs.readdirSync(path.join(__dirname, "..", "addons", name));
+        
+        files.forEach((file) => {
+            if(!fs.statSync(path.join(__dirname, "..", "addons", name, file)).isDirectory() && (file.toLowerCase() == "package.json")) {
+                let content = fs.readFileSync(path.join(__dirname, "..", "addons", name, file));
+
+                addons[name] = JSON.parse(content.toString());
+            }
+        });
+    });
+
+    res.render("addons", {
+        title: "Addons",
+        addons: addons,
+    });
 });
 
 app.get("/config", (req: any, res: any) => {

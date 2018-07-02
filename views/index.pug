@@ -1,13 +1,18 @@
 extends layout.pug
 
 block content
-    h1
-        | Bult Client
+    h1.section-title
+        span Bult
+    ol.breadcrumb.text-left
+        li.active Dashboard
+
     if running
         form(action="bot/stop" method="POST")
-            button(type="submit")
+            button.btn.pmd-btn-raised.btn-lg.btn-danger.btn-block.pmd-ripple-effect(type="submit")
                 | Stop Bot
+        
+        h2 Active Addons
     else
         form(action="bot/start" method="POST")
-            button(type="submit")
+            button.btn.pmd-btn-raised.btn-lg.btn-primary.btn-block(type="submit")
                 | Start Bot

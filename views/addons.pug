@@ -1,0 +1,30 @@
+extends layout.pug
+
+block content
+    h1.section-title
+        span Installed Addons
+    ol.breadcrumb.text-left
+        li
+            a(href='/') Dashboard
+        li.active Addons
+
+    table#addons.table.pmd-table.table-hover.table-striped.display.responsive.nowrap.dataTable.no-footer.dtr-column.collapsed(cellspacing="0", width="100%", role="grid", aria-describedby="example_info", style="width: 100%;")
+        thead
+            tr(role="row")
+                th.sorting(tabindex="0", rowspan="1", colspan="1") ID (Folder)
+                th.sorting(tabindex="0", rowspan="1", colspan="1") Version
+                th.sorting(tabindex="0", rowspan="1", colspan="1") Author
+                th.sorting(tabindex="0", rowspan="1", colspan="1") Entry Script
+                th(tabindex="0", rowspan="1", colspan="1") 
+        tbody
+            each addon, key in addons
+                tr(role="row")
+                    td #{addon["name"]} ("addons/#{key}")
+                    td #{addon["version"]}
+                    td #{addon["author"]}
+                    td #{addon["main"]}
+                    td
+                        button.btn.btn-sm.pmd-btn-raised.pmd-ripple-effect.btn-danger(type="button") Remove
+
+    script.
+        console.log(!{JSON.stringify(addons)})
