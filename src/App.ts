@@ -13,6 +13,7 @@ import { Bot, Installer } from "./manager/Bot";
 import { FileManager } from "./manager/File";
 import { Ember } from "./manager/Ember"; 
 import * as validator from "validator";
+import { Process } from "./manager/Process";
 
 var console: Console = require("better-console");
 const multer = require("multer");
@@ -23,9 +24,12 @@ const app = express();
 let BotManager: Bot = new Bot();
 let InstallerManager: Installer = new Installer();
 let EmberManager: Ember = new Ember();
+let ProcessManager: Process = new Process(EmberManager);
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+// Middlware to check if installed.
 app.use((req: any, res: any, next: any) => {
     if(req.path == "/install") {
         if(InstallerManager.installed()) {
@@ -38,6 +42,20 @@ app.use((req: any, res: any, next: any) => {
     } else {
         res.redirect("/install");
     }
+});
+
+// Middleware to check if Ember is running.
+app.use((req: any, res: any, next: any) => {
+    if(req.path == "/addons") {
+        if(!EmberManager.running()) {
+            EmberManager.start();
+            next();
+        }
+
+        next();
+    }
+
+    next();
 });
 
 app.set("view engine", "pug");
