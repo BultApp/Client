@@ -4,8 +4,10 @@ import * as touch from "touch";
 import * as mkdirp from "mkdirp";
 import * as path from "path";
 import * as fs from "fs";
+import { FileManager } from "./File";
 let axios = require("axios");
 let fileExists = require("file-exists");
+let dotenv = require("dotenv");
 
 export class Bot
 {
@@ -22,13 +24,13 @@ export class Bot
             return true;
         }
 
-        lockfile.lock("./chatbot/bot.lock", (err: Error) => {
+        lockfile.lock("./deps/bot.lock", (err: Error) => {
             if(err) {
                 console.log(err);
                 return false;
             }
 
-            this.instance = (process.platform == "linux") ? child.spawn("./chatbot/ChatBotCE") : child.spawn("./chatbot/ChatBotCE.exe");
+            this.instance = (process.platform == "linux") ? child.spawn("./deps/ChatBotCE") : child.spawn("./deps/ChatBotCE.exe");
             console.log("Process ID: " + this.instance.pid);
 
             return true;
@@ -48,7 +50,7 @@ export class Bot
             return true;
         }
 
-        lockfile.unlock("./chatbot/bot.lock", (err: Error) => {
+        lockfile.unlock("./deps/bot.lock", (err: Error) => {
             if(err) {
                 console.log(err);
                 return false;
@@ -69,7 +71,44 @@ export class Bot
      */
     public running(): boolean
     {
-        return lockfile.checkSync("./chatbot/bot.lock");
+        return lockfile.checkSync("./deps/bot.lock");
+    }
+
+    /**
+     * Gets the bot's environment file.
+     * 
+     * @return {any}
+     */
+    public env(): any
+    {
+        let buffer = Buffer.from(fs.readFileSync("./.env"));
+        return dotenv.parse(buffer);
+    }
+}
+
+export class Addon extends Bot
+{
+    public check(addonName: string): boolean
+    {
+        let addonpath = this.env().ADDON_FOLDER;
+        let folders = FileManager.getFolders(path.join(__dirname, "..", addonpath));
+
+        folders.forEach((name) => {
+            let files = fs.readdirSync(path.join(__dirname, "..", addonpath, name));
+            
+            files.forEach((file) => {
+                if(!fs.statSync(path.join(__dirname, "..", addonpath, name, file)).isDirectory() && (file.toLowerCase() == "package.json")) {
+                    let content = fs.readFileSync(path.join(__dirname, "..", addonpath, name, file));
+                    let packageJSON = JSON.parse(content.toString());
+
+                    if(addonName == packageJSON.name) {
+                        return true;
+                    }
+                }
+            });
+        });
+
+        return false;
     }
 }
 
@@ -78,7 +117,7 @@ export class Installer
     public install(): Promise<any>
     {
         return new Promise((resolve, reject) => {
-            mkdirp("./chatbot", (err) => {
+            mkdirp("./deps", (err) => {
                 if(err) {
                     console.log(err);
                     reject(err);
@@ -89,19 +128,19 @@ export class Installer
 
             axios("https://api.github.com/repos/MarkedBots/ChatBot-CE/releases/latest")
                 .then((response: any) => {
-                    console.log("Got the latest release. Looping through assets.");
+                    console.log("Got the latest release of ChatBotCE. Looping through assets.");
                     response.data.assets.forEach((asset: any) => {
                         console.log("Checking asset: " + asset.name);
                         if(isWin) {
                             if(asset.name.toLowerCase().indexOf("windows") > 0) {
-                                this.downloadAsset(asset.browser_download_url, "ChatBotCE.exe","./chatbot")
+                                FileManager.downloadAsset(asset.browser_download_url, "ChatBotCE.exe","./deps")
                                 .catch(err => {
                                     reject(err);
                                 });
                             }
                         } else {
                             if(asset.name.toLowerCase().indexOf("linux") > 0) {
-                                this.downloadAsset(asset.browser_download_url, "ChatBotCE","./chatbot")
+                                FileManager.downloadAsset(asset.browser_download_url, "ChatBotCE","./deps")
                                     .catch(err => {
                                         reject(err);
                                     });
@@ -109,7 +148,7 @@ export class Installer
                         }
 
                         if(asset.name.toLowerCase() == "env.example") {
-                            this.downloadAsset(asset.browser_download_url, ".env", "./")
+                            FileManager.downloadAsset(asset.browser_download_url, ".env", "./")
                                 .catch(err => {
                                     reject(err);
                                 });
@@ -122,11 +161,33 @@ export class Installer
                         }
                     });
 
-                    touch("./installed.lock").then(() => {
-                        resolve(true);
-                    }).catch((err) => {
-                        reject(err);
+                    return axios("https://api.github.com/repos/BultApp/Ember/releases/latest")
+                })
+                .then((response: any) => {
+                    console.log("Got the latest release of Ember. Looping through assets.");
+                    response.data.assets.forEach((asset: any) => {
+                        console.log("Checking asset: " + asset.name);
+                        if(isWin) {
+                            if(asset.name.toLowerCase().indexOf("windows") > 0) {
+                                FileManager.downloadAsset(asset.browser_download_url, "Ember.exe","./deps")
+                                .catch(err => {
+                                    reject(err);
+                                });
+                            }
+                        } else {
+                            if(asset.name.toLowerCase().indexOf("linux") > 0) {
+                                FileManager.downloadAsset(asset.browser_download_url, "Ember","./deps")
+                                    .catch(err => {
+                                        reject(err);
+                                    });
+                            }
+                        }
                     });
+
+                    return touch("./installed.lock")
+                })
+                .then(() => {
+                    resolve(true);
                 })
                 .catch((err: any) => {
                     reject(err);
@@ -142,28 +203,5 @@ export class Installer
     public installed(): boolean
     {
         return fileExists.sync("./installed.lock");
-    }
-
-    private async downloadAsset(url: string, filename: string, filepath: string): Promise<any>
-    {
-        filepath = path.resolve(filepath, filename);
-
-        let response = await axios({
-            method: "GET",
-            url: url,
-            responseType: "stream",
-        });
-
-        response.data.pipe(fs.createWriteStream(filepath));
-
-        return new Promise((resolve, reject) => {
-            response.data.on('end', () => {
-                resolve()
-            })
-        
-            response.data.on('error', () => {
-                reject()
-            })
-        });
     }
 }

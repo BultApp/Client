@@ -1,8 +1,31 @@
 extends layout.pug
 
 block content
-    h1.section-title
-        span Installed Addons
+    ul.list-unstyled.list-inline
+        li
+            h1.section-title
+                span Installed Addons
+        li.pull-right
+            h1.section-title
+                button.btn.pmd-btn-outline.pmd-ripple-effect.btn-success(type="button", data-target="#install-addon-zip", data-toggle="modal")
+                    | Install Addon (.zip)
+
+    #install-addon-zip.modal.fade(tabindex="-1", style="display: none;", aria-hidden="true")
+        .modal-dialog
+            .modal-content
+                .modal-header.bordered
+                    button.close(aria-hidden="true", data-dismiss="modal", type="button") ×															
+                    h2.pmd-card-title-text Install Addon
+                .modal-body
+                    form.form-horizontal(method="POST" action="/addons/ember/install")
+                        .form-group.pmd-textfield.pmd-textfield-floating-label
+                            label(for="zipURL") URL (must link to a .zip)
+                            input#zipURL.mat-input.form-control(type="url", name="zipURL",value="")
+                            span.pmd-textfield-focused
+                        .pmd-modal-action
+                            button.btn.pmd-ripple-effect.btn-primary(type="submit") Install														
+                            button.btn.pmd-ripple-effect.btn-default(data-dismiss="modal", type="button") Cancel
+
     ol.breadcrumb.text-left
         li
             a(href='/') Dashboard
@@ -19,12 +42,14 @@ block content
         tbody
             each addon, key in addons
                 tr(role="row")
-                    td #{addon["name"]} ("addons/#{key}")
+                    td #{addon["name"]} ("<i>/#{key}</i>")
                     td #{addon["version"]}
                     td #{addon["author"]}
                     td #{addon["main"]}
                     td
-                        button.btn.btn-sm.pmd-btn-raised.pmd-ripple-effect.btn-danger(type="button") Remove
+                        form(method="POST", action="/addons/remove")
+                            input#addonFolder(name="addonFolder", style="display:none;", type="text", disabled=true, value=key)
+                            button.btn.btn-sm.pmd-btn-raised.pmd-ripple-effect.btn-danger(type="submit") Remove
 
     script.
         console.log(!{JSON.stringify(addons)})

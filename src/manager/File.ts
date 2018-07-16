@@ -1,12 +1,37 @@
 import * as fs from "fs";
 import * as path from "path";
 
+let axios = require("axios");
+
 export class FileManager
 {
     public static getFolders(folderPath: string)
     {
         return fs.readdirSync(folderPath).filter((file) => {
             return fs.statSync(path.join(folderPath, file)).isDirectory();
+        });
+    }
+
+    public static async downloadAsset(url: string, filename: string, filepath: string): Promise<any>
+    {
+        filepath = path.resolve(filepath, filename);
+
+        let response = await axios({
+            method: "GET",
+            url: url,
+            responseType: "stream",
+        });
+
+        response.data.pipe(fs.createWriteStream(filepath));
+
+        return new Promise((resolve, reject) => {
+            response.data.on('end', () => {
+                resolve()
+            })
+
+            response.data.on('error', () => {
+                reject()
+            })
         });
     }
 
