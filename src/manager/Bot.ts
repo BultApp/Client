@@ -31,7 +31,7 @@ export class Bot
             }
 
             this.instance = (process.platform == "linux") ? child.spawn("./deps/ChatBotCE") : child.spawn("./deps/ChatBotCE.exe");
-            console.log("Process ID: " + this.instance.pid);
+            console.log("Bot Process ID: " + this.instance.pid);
 
             return true;
         });
@@ -126,7 +126,7 @@ export class Installer
     
             let isWin = (process.platform == "win32");
 
-            axios("https://api.github.com/repos/MarkedBots/ChatBot-CE/releases/latest")
+            axios("https://api.github.com/repos/MarkedBots/ChatBot-CE/releases/latest?callback")
                 .then((response: any) => {
                     console.log("Got the latest release of ChatBotCE. Looping through assets.");
                     response.data.assets.forEach((asset: any) => {
@@ -134,9 +134,9 @@ export class Installer
                         if(isWin) {
                             if(asset.name.toLowerCase().indexOf("windows") > 0) {
                                 FileManager.downloadAsset(asset.browser_download_url, "ChatBotCE.exe","./deps")
-                                .catch(err => {
-                                    reject(err);
-                                });
+                                    .catch(err => {
+                                        reject(err);
+                                    });
                             }
                         } else {
                             if(asset.name.toLowerCase().indexOf("linux") > 0) {
@@ -161,7 +161,7 @@ export class Installer
                         }
                     });
 
-                    return axios("https://api.github.com/repos/BultApp/Ember/releases/latest")
+                    return axios("https://api.github.com/repos/BultApp/Ember/releases/latest?callback")
                 })
                 .then((response: any) => {
                     console.log("Got the latest release of Ember. Looping through assets.");
@@ -170,9 +170,9 @@ export class Installer
                         if(isWin) {
                             if(asset.name.toLowerCase().indexOf("windows") > 0) {
                                 FileManager.downloadAsset(asset.browser_download_url, "Ember.exe","./deps")
-                                .catch(err => {
-                                    reject(err);
-                                });
+                                    .catch(err => {
+                                        reject(err);
+                                    });
                             }
                         } else {
                             if(asset.name.toLowerCase().indexOf("linux") > 0) {
