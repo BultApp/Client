@@ -139,14 +139,6 @@ app.post("/addons/remove", upload.array(), (req: any, res: any) => {
 
         return res.redirect("/addons?removed=true");
     });
-    // fs.unlink(path.join(__dirname, "..", "addons", req.body.addonFolder), (err) => {
-    //     if(err) {
-    //         console.log(err);
-    //         return res.redirect("/addons?removed=false&addonFolder=" + req.body.addonFolder);
-    //     }
-
-    //     return res.redirect("/addons?removed=true");
-    // });
 });
 
 app.post("/addons/ember/install", upload.array(), (req: any, res: any) => {
