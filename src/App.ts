@@ -184,14 +184,3 @@ ADDON_FOLDER="${req.body.addonFolder}"`
 app.listen(process.env.EXPRESS_PORT, () => {
     console.info("Bult Client listening on port " + process.env.EXPRESS_PORT + ".");
 });
-
-function unless(path: string, middleware: any): any
-{
-    return function(req: any, res: any, next: any) {
-        if (path === req.path) {
-            return next();
-        } else {
-            return middleware(req, res, next);
-        }
-    };
-}
