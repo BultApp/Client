@@ -2,11 +2,9 @@ import { Ember } from "./Ember"
 
 export class Process
 {
+    private stopping: boolean = false;
+    
     constructor(private ember: Ember) {
-        // if(this.ember.start()) {
-        //     console.log("Ember launched and ready to go.");
-        // }
-
         process.on("exit", (code) => {
             this.onExit(code);
         });
@@ -16,6 +14,7 @@ export class Process
         });
         
         process.on("uncaughtException", (err) => {
+            console.error(err);
             this.onExit(1);
         });
     }
@@ -27,10 +26,15 @@ export class Process
      * @return {void}
      */
     public onExit(code: number): void {
-        console.log("Bult is exiting. Stopping Ember.");
+        if(!this.stopping) {
+            this.stopping = true;
 
-        if(this.ember.stop()) {
-            console.log("Ember has been stopped.")
+            console.log("Bult is exiting. Stopping Ember.");
+
+            if(this.ember.stop()) {
+                console.log("Ember has been stopped.");
+                console.log("\n\n\nBye Bye!")
+            }
         }
 
         process.exit(code);

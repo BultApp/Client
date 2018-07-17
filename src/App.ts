@@ -9,6 +9,7 @@ import * as path from "path";
 import * as request from "request";
 import * as fs from "fs";
 import * as mkdirp from "mkdirp";
+import * as rimraf from "rimraf";
 import { Bot, Installer } from "./manager/Bot";
 import { FileManager } from "./manager/File";
 import { Ember } from "./manager/Ember"; 
@@ -130,7 +131,7 @@ app.get("/addons", (req: any, res: any) => {
 });
 
 app.post("/addons/remove", upload.array(), (req: any, res: any) => {
-    fs.unlink(path.join(__dirname, "..", "addons", req.body.addonFolder), (err) => {
+    rimraf(path.join(__dirname, "..", BotManager.env().ADDON_FOLDER, req.body.addonFolder), (err) => {
         if(err) {
             console.log(err);
             return res.redirect("/addons?removed=false&addonFolder=" + req.body.addonFolder);
@@ -138,6 +139,14 @@ app.post("/addons/remove", upload.array(), (req: any, res: any) => {
 
         return res.redirect("/addons?removed=true");
     });
+    // fs.unlink(path.join(__dirname, "..", "addons", req.body.addonFolder), (err) => {
+    //     if(err) {
+    //         console.log(err);
+    //         return res.redirect("/addons?removed=false&addonFolder=" + req.body.addonFolder);
+    //     }
+
+    //     return res.redirect("/addons?removed=true");
+    // });
 });
 
 app.post("/addons/ember/install", upload.array(), (req: any, res: any) => {
@@ -157,7 +166,7 @@ app.post("/addons/ember/install", upload.array(), (req: any, res: any) => {
         .catch((message) => {
             console.log(message);
 
-            return res.redirect("/addons?failed=true&tgzURL=" + req.body.zipURL);
+            return res.redirect("/addons?failed=true&zipURL=" + req.body.zipURL);
         });
 });
 

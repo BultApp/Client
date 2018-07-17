@@ -48,7 +48,7 @@ block content
                     td #{addon["main"]}
                     td
                         form(method="POST", action="/addons/remove")
-                            input#addonFolder(name="addonFolder", style="display:none;", type="text", disabled=true, value=key)
+                            input#addonFolder(name="addonFolder", style="display:none;", type="text", value=key)
                             button.btn.btn-sm.pmd-btn-raised.pmd-ripple-effect.btn-danger(type="submit") Remove
 
     script.

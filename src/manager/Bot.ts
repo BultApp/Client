@@ -4,6 +4,7 @@ import * as touch from "touch";
 import * as mkdirp from "mkdirp";
 import * as path from "path";
 import * as fs from "fs";
+import * as execa from "execa";
 import { FileManager } from "./File";
 let axios = require("axios");
 let fileExists = require("file-exists");
@@ -141,6 +142,13 @@ export class Installer
                         } else {
                             if(asset.name.toLowerCase().indexOf("linux") > 0) {
                                 FileManager.downloadAsset(asset.browser_download_url, "ChatBotCE","./deps")
+                                    .then(() => {
+                                        return execa("chmod", ["+x", path.join(__dirname, "deps", "ChatBotCE")])
+                                        //fs.chmodSync(path.join(__dirname, "deps", "ChatBotCE"), "755");
+                                    })
+                                    .then(result => {
+                                        console.log(result.stdout);
+                                    })
                                     .catch(err => {
                                         reject(err);
                                     });
@@ -177,6 +185,13 @@ export class Installer
                         } else {
                             if(asset.name.toLowerCase().indexOf("linux") > 0) {
                                 FileManager.downloadAsset(asset.browser_download_url, "Ember","./deps")
+                                    .then(() => {
+                                        return execa("chmod", ["+x", path.join(__dirname, "deps", "Ember")])
+                                        //fs.chmodSync(path.join(__dirname, "deps", "Ember"), "755");
+                                    })
+                                    .then(result => {
+                                        console.log(result.stdout);
+                                    })
                                     .catch(err => {
                                         reject(err);
                                     });
