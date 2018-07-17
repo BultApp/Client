@@ -5,7 +5,8 @@ import * as mkdirp from "mkdirp";
 import * as path from "path";
 import * as fs from "fs";
 import * as execa from "execa";
-import { File as FileManager } from "./File";
+import { File as FileManager, File } from "./File";
+import { Manager } from "./Manager";
 let axios = require("axios");
 let fileExists = require("file-exists");
 let dotenv = require("dotenv");
@@ -89,6 +90,28 @@ export class Bot
 
 export class Addon extends Bot
 {
+    public addons(): object {
+        let addons: any = {};
+        let addonpath = path.join(__dirname, "..", "..", Manager.get().bot().env().ADDON_FOLDER);
+        let folders = File.getFolders(addonpath);
+
+        folders.forEach((name) => {
+            addons[name] = {};
+
+            let files = fs.readdirSync(path.join(addonpath, name));
+            
+            files.forEach((file) => {
+                if(!fs.statSync(path.join(addonpath, name, file)).isDirectory() && (file.toLowerCase() == "package.json")) {
+                    let content = fs.readFileSync(path.join(addonpath, name, file));
+
+                    addons[name] = JSON.parse(content.toString());
+                }
+            });
+        });
+        
+        return addons;
+    }
+
     public check(addonName: string): boolean
     {
         let addonpath = this.env().ADDON_FOLDER;
