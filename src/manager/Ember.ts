@@ -1,10 +1,5 @@
 import * as lockfile from "lockfile"
 import * as child from "child_process";
-import * as touch from "touch";
-import * as mkdirp from "mkdirp";
-import * as path from "path";
-import * as fs from "fs";
-import { FileManager } from "./File";
 let fileExists = require("file-exists");
 let axios = require("axios");
 

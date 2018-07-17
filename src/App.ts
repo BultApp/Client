@@ -6,15 +6,11 @@ import * as dotenv from "dotenv";
 import * as bodyParser from "body-parser";
 import * as express from "express";
 import * as path from "path";
-import * as request from "request";
 import * as fs from "fs";
-import * as mkdirp from "mkdirp";
 import * as rimraf from "rimraf";
-import { Bot, Installer } from "./manager/Bot";
-import { FileManager } from "./manager/File";
-import { Ember } from "./manager/Ember"; 
 import * as validator from "validator";
-import { Process } from "./manager/Process";
+import { Manager as MasterManager } from "./manager/Manager";
+import { File } from "./manager/File";
 
 var console: Console = require("better-console");
 const multer = require("multer");
@@ -22,10 +18,7 @@ const axios = require("axios");
 const upload = multer();
 const app = express();
 
-let BotManager: Bot = new Bot();
-let InstallerManager: Installer = new Installer();
-let EmberManager: Ember = new Ember();
-let ProcessManager: Process = new Process(EmberManager);
+let manager: MasterManager = new MasterManager();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -33,12 +26,12 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // Middlware to check if installed.
 app.use((req: any, res: any, next: any) => {
     if(req.path == "/install") {
-        if(InstallerManager.installed()) {
+        if(manager.installer().installed()) {
             res.redirect("/");
         } else {
             next();
         }
-    } else if(InstallerManager.installed()) {
+    } else if(manager.installer().installed()) {
         next();
     } else {
         res.redirect("/install");
@@ -48,8 +41,8 @@ app.use((req: any, res: any, next: any) => {
 // Middleware to check if Ember is running.
 app.use((req: any, res: any, next: any) => {
     if(req.path == "/addons") {
-        if(!EmberManager.running()) {
-            EmberManager.start();
+        if(!manager.ember().running()) {
+            manager.ember().start();
             next();
         }
 
@@ -65,7 +58,7 @@ app.set("views", path.join(__dirname, "..","views"));
 app.get("/", (req: any, res: any) => {
     res.render("index", {
         title: "Dashboard",
-        running: BotManager.running(),
+        running: manager.bot().running(),
         started: (req.query.started != undefined),
         stopped: (req.query.stopped != undefined),
     });
@@ -76,7 +69,7 @@ app.get("/install", (req: any, res: any) => {
 });
 
 app.post("/install", upload.array(), (req: any, res: any) => {
-    InstallerManager.install().then(() => {
+    manager.installer().install().then(() => {
         res.json({
             installed: true
         })
@@ -90,7 +83,7 @@ app.post("/install", upload.array(), (req: any, res: any) => {
 });
 
 app.post("/bot/start", upload.array(), (req: any, res: any) => {
-    if(BotManager.start()) {
+    if(manager.bot().start()) {
         res.redirect("/?started=true");
     } else {
         res.redirect("/")
@@ -98,7 +91,7 @@ app.post("/bot/start", upload.array(), (req: any, res: any) => {
 });
 
 app.post("/bot/stop", upload.array(), (req: any, res: any) => {
-    if(BotManager.stop()) {
+    if(manager.bot().stop()) {
         res.redirect("/?stopped=true");
     } else {
         res.redirect("/")
@@ -107,8 +100,8 @@ app.post("/bot/stop", upload.array(), (req: any, res: any) => {
 
 app.get("/addons", (req: any, res: any) => {
     let addons: any = {};
-    let addonpath = BotManager.env().ADDON_FOLDER;
-    let folders = FileManager.getFolders(path.join(__dirname, "..", addonpath));
+    let addonpath = manager.bot().env().ADDON_FOLDER;
+    let folders = File.getFolders(path.join(__dirname, "..", addonpath));
 
     folders.forEach((name) => {
         addons[name] = {};
@@ -131,7 +124,7 @@ app.get("/addons", (req: any, res: any) => {
 });
 
 app.post("/addons/remove", upload.array(), (req: any, res: any) => {
-    rimraf(path.join(__dirname, "..", BotManager.env().ADDON_FOLDER, req.body.addonFolder), (err) => {
+    rimraf(path.join(__dirname, "..", manager.bot().env().ADDON_FOLDER, req.body.addonFolder), (err) => {
         if(err) {
             console.log(err);
             return res.redirect("/addons?removed=false&addonFolder=" + req.body.addonFolder);
@@ -147,9 +140,9 @@ app.post("/addons/ember/install", upload.array(), (req: any, res: any) => {
     }
 
     let filename = (new Date().valueOf().toString());
-    let addonpath = BotManager.env().ADDON_FOLDER;
+    let addonpath = manager.bot().env().ADDON_FOLDER;
 
-    EmberManager.addon().install(req.body.zipURL, filename, path.join(__dirname, "..", addonpath))
+    manager.ember().addon().install(req.body.zipURL, filename, path.join(__dirname, "..", addonpath))
         .then((message) => {
             console.log(message);
 

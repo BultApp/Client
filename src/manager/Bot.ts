@@ -5,7 +5,7 @@ import * as mkdirp from "mkdirp";
 import * as path from "path";
 import * as fs from "fs";
 import * as execa from "execa";
-import { FileManager } from "./File";
+import { File as FileManager } from "./File";
 let axios = require("axios");
 let fileExists = require("file-exists");
 let dotenv = require("dotenv");

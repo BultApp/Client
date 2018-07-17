@@ -3,7 +3,7 @@ import * as path from "path";
 
 let axios = require("axios");
 
-export class FileManager
+export class File
 {
     public static getFolders(folderPath: string)
     {
