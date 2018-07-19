@@ -9,9 +9,13 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "clean": "rm -rf ./dist/*",
+    "full-start": "npm run prepare && npm run start",
     "start": "node ./dist/App",
+    "grunt": "grunt",
     "compile": "tsc -p .",
-    "package": "pkg package.json --out-path dist/release"
+    "prepare": "npm run grunt && npm run compile",
+    "package": "npm run prepare && pkg package.json --out-path dist/release"
+
   },
   "repository": {
     "type": "git",
@@ -46,7 +50,14 @@
     "validator": "^10.4.0"
   },
   "devDependencies": {
-    "pkg": "^4.3.3"
+    "grunt": "^1.0.3",
+    "grunt-cli": "^1.2.0",
+    "grunt-contrib-watch": "^1.1.0",
+    "grunt-ts": "^6.0.0-beta.20",
+    "grunt-tslint": "^5.0.2",
+    "pkg": "^4.3.3",
+    "tslint": "^5.11.0",
+    "typescript": "^2.9.2"
   },
   "pkg": {
     "assets": [

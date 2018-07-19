@@ -1,7 +1,6 @@
-import { Ember } from "./Ember"
+import { Ember } from "./Ember";
 
-export class Process
-{
+export class Process {
     private stopping: boolean = false;
     
     constructor(private ember: Ember) {
@@ -26,14 +25,14 @@ export class Process
      * @return {void}
      */
     public onExit(code: number): void {
-        if(!this.stopping) {
+        if (!this.stopping) {
             this.stopping = true;
 
             console.log("Bult is exiting. Stopping Ember.");
 
-            if(this.ember.stop()) {
+            if (this.ember.stop()) {
                 console.log("Ember has been stopped.");
-                console.log("\n\n\nBye Bye!")
+                console.log("\n\n\nBye Bye!");
             }
         }
 

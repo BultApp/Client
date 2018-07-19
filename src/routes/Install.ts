@@ -1,8 +1,7 @@
 import * as express from "express";
 import { Manager } from "../manager/Manager";
 
-export class Install
-{
+export class Install {
     public static getInstall(req: express.Request, res: express.Response, next: express.NextFunction) {
         res.render("install");
     }
@@ -11,7 +10,7 @@ export class Install
         Manager.get().installer().install().then(() => {
             res.json({
                 installed: true
-            })
+            });
         }).catch((err) => {
             console.log(err);
             res.json({

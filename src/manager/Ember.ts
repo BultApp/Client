@@ -1,13 +1,11 @@
-import * as lockfile from "lockfile"
+import * as lockfile from "lockfile";
 import * as child from "child_process";
-let fileExists = require("file-exists");
 let axios = require("axios");
 
-export class Ember 
-{
+export class Ember {
     private addonManager: EmberAddon;
     private instance: child.ChildProcess;
-    public emberURL = "http://localhost:5650"
+    public emberURL = "http://localhost:5650";
 
     constructor() {
         this.addonManager = new EmberAddon(this);
@@ -27,19 +25,18 @@ export class Ember
      * 
      * @return {boolean}
      */
-    public start(): boolean
-    {
-        if(this.running()) {
+    public start(): boolean {
+        if (this.running()) {
             return true;
         }
 
         lockfile.lock("./deps/ember.lock", (err: Error) => {
-            if(err) {
+            if (err) {
                 console.log(err);
                 return false;
             }
 
-            this.instance = (process.platform == "linux") ? child.spawn("./deps/Ember") : child.spawn("./deps/Ember.exe");
+            this.instance = (process.platform === "linux") ? child.spawn("./deps/Ember") : child.spawn("./deps/Ember.exe");
             console.log("Ember Process ID: " + this.instance.pid);
 
             return true;
@@ -53,14 +50,13 @@ export class Ember
      * 
      * @return {boolean}
      */
-    public stop(): boolean
-    {
-        if(!this.running()) {
+    public stop(): boolean {
+        if (!this.running()) {
             return true;
         }
 
         lockfile.unlock("./deps/ember.lock", (err: Error) => {
-            if(err) {
+            if (err) {
                 console.log(err);
                 return false;
             }
@@ -78,14 +74,12 @@ export class Ember
      * 
      * @return {boolean}
      */
-    public running(): boolean
-    {
+    public running(): boolean {
         return lockfile.checkSync("./deps/ember.lock");
     }
 }
 
-export class EmberAddon
-{
+export class EmberAddon {
     private ember: Ember;
 
     constructor(emberManager: Ember) {
@@ -99,7 +93,7 @@ export class EmberAddon
                 filename: filename,
                 extractTo: path
             }).then((response: any) => {
-                if(response.data.error) {
+                if (response.data.error) {
                     reject(response.data.message);
                 }
 

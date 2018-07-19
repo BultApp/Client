@@ -2,8 +2,7 @@ import { Bot, Installer, Addon } from "./Bot";
 import { Ember } from "./Ember";
 import { Process } from "./Process";
 
-export class Manager
-{
+export class Manager {
     private static instance: Manager = null;
     private addonManager: Addon;
     private botManager: Bot;
@@ -16,11 +15,10 @@ export class Manager
     }
 
     public static created() {
-        return this.instance != null
+        return this.instance !== null;
     }
 
-    constructor()
-    {
+    constructor() {
         this.addonManager = new Addon();
         this.botManager = new Bot();
         this.installerManager = new Installer();
