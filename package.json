@@ -9,13 +9,13 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "clean": "rm -rf ./dist/*",
-    "full-start": "npm run prepare && npm run start",
+    "full-start": "npm run bult-prepare && npm run start",
     "start": "node ./dist/App",
     "grunt": "grunt",
     "compile": "tsc -p .",
-    "prepare": "npm run grunt && npm run compile",
-    "package": "npm run prepare && pkg package.json --out-path dist/release"
-
+    "bult-prepare": "npm run grunt && npm run compile",
+    "package": "npm run bult-prepare && pkg package.json --out-path dist/release",
+    "release": "clear && echo 'Preparing Bult for published release.' && rm -rf ./node_modules && npm install --production && npm run clean && npm run compile && pkg package.json --out-path dist/release"
   },
   "repository": {
     "type": "git",
