@@ -14,8 +14,8 @@ export class Addon {
     
         let filename = (new Date().valueOf().toString());
         let addonpath = Manager.get().bot().env().ADDON_FOLDER;
-    
-        Manager.get().ember().addon().install(req.body.zipURL, filename, path.join(__dirname, "..", "..", addonpath))
+     
+        Manager.get().ember().addon().install(req.body.zipURL, filename, process.cwd() + "/" + addonpath)
             .then((message) => {
                 console.log(message);
     
@@ -41,7 +41,7 @@ export class Addon {
 
     public static getAddons(req: express.Request, res: express.Response, next: express.NextFunction) {
         let addons: any = {};
-        let addonpath = path.join(__dirname, "..", "..", Manager.get().bot().env().ADDON_FOLDER);
+        let addonpath = Manager.get().bot().env().ADDON_FOLDER;
         let folders = File.getFolders(addonpath);
 
         folders.forEach((name) => {
@@ -50,8 +50,8 @@ export class Addon {
             let files = fs.readdirSync(path.join(addonpath, name));
             
             files.forEach((file) => {
-                if (!fs.statSync(path.join(addonpath, name, file)).isDirectory() && (file.toLowerCase() === "package.json")) {
-                    let content = fs.readFileSync(path.join(addonpath, name, file));
+                if (!fs.statSync(addonpath + "/" + name + "/" + file).isDirectory() && (file.toLowerCase() === "package.json")) {
+                    let content = fs.readFileSync(addonpath + "/" + name + "/" + file);
 
                     addons[name] = JSON.parse(content.toString());
                 }
