@@ -21,7 +21,7 @@ export class Config {
             encoding: "utf8",
             flag: "w"
         });
-    
+
         res.redirect("/config?saved=true");
     }
 }
