@@ -3,6 +3,7 @@ import { Installer } from "./Install";
 import { Ember } from "./Ember";
 import { Process } from "./Process";
 import { Database } from "./Database";
+import { IP } from "./IP";
 
 export class Manager {
     private static instance: Manager = null;
@@ -12,6 +13,7 @@ export class Manager {
     private emberManager: Ember;
     private processManager: Process;
     private databaseManager: Database;
+    private ipManager: IP;
 
     public static get(): Manager {
         return this.instance;
@@ -23,6 +25,7 @@ export class Manager {
 
     constructor() {
         this.databaseManager = new Database();
+        this.ipManager = new IP();
         this.addonManager = new Addon();
         this.botManager = new Bot();
         this.installerManager = new Installer();
@@ -50,5 +53,9 @@ export class Manager {
 
     public database() {
         return this.databaseManager;
+    }
+
+    public ip() {
+        return this.ipManager;
     }
 }
