@@ -1,4 +1,3 @@
-import * as fs from "fs";
 import * as bodyParser from "body-parser";
 import * as path from "path";
 import { Manager as MasterManager } from "./manager/Manager";
@@ -6,7 +5,6 @@ import { Config } from "./routes/Config";
 import { Addon } from "./routes/Addons";
 import { Install } from "./routes/Install";
 import { Bot } from "./routes/Bot";
-let fileExists = require("file-exists");
 let upload = require("multer")();
 let app = require("express")();
 let manager: MasterManager = new MasterManager();
