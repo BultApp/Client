@@ -1,6 +1,8 @@
-import { Bot, Installer, Addon } from "./Bot";
+import { Bot, Addon } from "./Bot";
+import { Installer } from "./Install";
 import { Ember } from "./Ember";
 import { Process } from "./Process";
+import { Database } from "./Database";
 
 export class Manager {
     private static instance: Manager = null;
@@ -9,6 +11,7 @@ export class Manager {
     private installerManager: Installer;
     private emberManager: Ember;
     private processManager: Process;
+    private databaseManager: Database;
 
     public static get(): Manager {
         return this.instance;
@@ -19,6 +22,7 @@ export class Manager {
     }
 
     constructor() {
+        this.databaseManager = new Database();
         this.addonManager = new Addon();
         this.botManager = new Bot();
         this.installerManager = new Installer();
@@ -42,5 +46,9 @@ export class Manager {
 
     public process() {
         return this.processManager;
+    }
+
+    public database() {
+        return this.databaseManager;
     }
 }
