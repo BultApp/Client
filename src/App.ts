@@ -10,6 +10,7 @@ import { ServerMode } from "./routes/ServerMode";
 let upload = require("multer")();
 let app = require("express")();
 let toTime = require("to-time");
+let opn = require("open");
 let manager: MasterManager = new MasterManager();
 let database = manager.database();
 let ipAddr = "";
@@ -127,4 +128,8 @@ app.listen(database.config().port, () => {
     });
 
     userId = manager.bot().env().USER_ID;
+
+    if (!manager.database().config().serverMode.active) {
+        opn(ipAddr);
+    }
 });
