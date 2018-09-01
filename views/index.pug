@@ -7,11 +7,16 @@ block content
         li.active Dashboard
 
     if running
-        form(action="bot/stop" method="POST")
-            button.btn.pmd-btn-raised.btn-lg.btn-danger.btn-block.pmd-ripple-effect(type="submit")
-                | Stop Bot
+        .row
+            .col-lg-6
+                form(action="bot/stop" method="POST")
+                    button.btn.pmd-btn-raised.btn-lg.btn-danger.btn-block.pmd-ripple-effect(type="submit")
+                        | Stop Bot
         
-        h2 Active Addons
+                h2 Active Addons
+            .col-lg-6
+                .responsive-video
+                    iframe(src="https://www.stream.me/stream-embed/user:"+userId+":web/chat-only?hideChat=false", frameborder="0", allowfullscreen="")
     else
         form(action="bot/start" method="POST")
             button.btn.pmd-btn-raised.btn-lg.btn-primary.btn-block(type="submit")
