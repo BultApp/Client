@@ -10,6 +10,7 @@ let fileExists = require("file-exists");
 let upload = require("multer")();
 let app = require("express")();
 let manager: MasterManager = new MasterManager();
+let database = manager.database();
 
 app.set("view engine", "pug");
 app.set("views", path.join(__dirname, "..", "views"));
@@ -68,6 +69,6 @@ app.post("/addons/ember/install", upload.array(), Addon.postEmberInstall.bind(Ad
 app.get("/config", Config.getConfig.bind(Config.getConfig));
 app.post("/config", upload.array(), Config.postConfig.bind(Config.postConfig));
 
-app.listen(7285, () => {
-    console.log("Bult Client listening on port 7285.");
+app.listen(database.config().port, () => {
+    console.log(`Bult Client listening on port ${database.config().port}.`);
 });
