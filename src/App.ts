@@ -12,6 +12,7 @@ let app = require("express")();
 let toTime = require("to-time");
 let manager: MasterManager = new MasterManager();
 let database = manager.database();
+let ipAddr = "";
 
 app.set("view engine", "pug");
 app.set("views", path.join(__dirname, "..", "views"));
@@ -87,6 +88,13 @@ app.use((req: any, res: any, next: any) => {
     next();
 });
 
+// Middleware to pass layout variables.
+app.use((req: any, res: any, next: any) => {
+    res.locals.ipAddress = ipAddr;
+
+    next();
+});
+
 app.get("/", (req: any, res: any) => {
     res.render("index", {
         title: "Dashboard",
@@ -111,4 +119,8 @@ app.post("/config", upload.array(), Config.postConfig.bind(Config.postConfig));
 
 app.listen(database.config().port, () => {
     console.log(`Bult Client listening on port ${database.config().port}.`);
+
+    manager.ip().getIp().then((ip) => {
+        ipAddr = `${ip}:${database.config().port}`;
+    });
 });
