@@ -1,12 +1,15 @@
 import * as bodyParser from "body-parser";
 import * as path from "path";
+import * as Session from "express-session";
 import { Manager as MasterManager } from "./manager/Manager";
 import { Config } from "./routes/Config";
 import { Addon } from "./routes/Addons";
 import { Install } from "./routes/Install";
 import { Bot } from "./routes/Bot";
+import { ServerMode } from "./routes/ServerMode";
 let upload = require("multer")();
 let app = require("express")();
+let toTime = require("to-time");
 let manager: MasterManager = new MasterManager();
 let database = manager.database();
 
@@ -15,6 +18,45 @@ app.set("views", path.join(__dirname, "..", "views"));
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+// Check if in server mode.
+if (database.config().serverMode.active) {
+    console.log("Server mode is active. If you didn't mean to do this, please exit and disable it.");
+    console.log("Server mode is an advanced mode that is meant to be ran on servers. Only those who know how to use this should enable it.");
+
+    let config = database.config().serverMode;
+
+    app.use(Session({
+        secret: config.session.secret,
+        resave: true,
+        saveUninitialized: false,
+        cookie: {
+            secure: config.session.cookie.secure,
+            maxAge: toTime.fromMinutes(config.session.cookie.lifetime).ms()
+        }
+    }));
+
+    app.use((req: any, res: any, next: any) => {
+        if (req.path !== "/serverLogin") {
+            if (req.session.loggedIn) {
+                next();
+            } else {
+                res.redirect("/serverLogin");
+            }
+        } else if (req.path === "/serverLogin") {
+            if (req.session.loggedIn) {
+                res.redirect("/");
+            } else {
+                next();
+            }
+        } else {
+            res.redirect("/serverLogin");
+        }
+    });
+
+    app.get("/serverLogin", ServerMode.getLogin.bind(ServerMode.getLogin));
+    app.post("/serverLogin", upload.array(), ServerMode.postLogin.bind(ServerMode.postLogin));
+}
 
 // Middlware to check if installed.
 app.use((req: any, res: any, next: any) => {
