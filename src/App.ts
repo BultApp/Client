@@ -14,7 +14,7 @@ let opn = require("open");
 let manager: MasterManager = new MasterManager();
 let database = manager.database();
 let ipAddr = "";
-let userId = "";
+let userId: string = null;
 
 app.set("view engine", "pug");
 app.set("views", path.join(__dirname, "..", "views"));
@@ -92,8 +92,14 @@ app.use((req: any, res: any, next: any) => {
 
 // Middleware to pass layout variables.
 app.use((req: any, res: any, next: any) => {
-    res.locals.ipAddress = ipAddr;
-    res.locals.userId = userId;
+    if (req.path !== "/install") {
+        if (!userId && manager.bot().env() !== null) {
+            userId = manager.bot().env().USER_ID;
+        }
+        
+        res.locals.ipAddress = ipAddr;
+        res.locals.userId = userId;
+    }
 
     next();
 });
@@ -126,8 +132,6 @@ app.listen(database.config().port, () => {
     manager.ip().getIp().then((ip) => {
         ipAddr = `${ip}:${database.config().port}`;
     });
-
-    userId = manager.bot().env().USER_ID;
 
     if (!manager.database().config().serverMode.active) {
         opn(ipAddr);
