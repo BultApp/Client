@@ -73,6 +73,10 @@ export class Bot {
      * @return {any}
      */
     public env(): any {
+        if (!fs.existsSync("./.env")) {
+            return null;
+        }
+        
         let buffer = Buffer.from(fs.readFileSync("./.env"));
         return dotenv.parse(buffer);
     }
