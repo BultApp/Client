@@ -1,7 +1,5 @@
 import * as touch from "touch";
 import * as mkdirp from "mkdirp";
-import * as path from "path";
-import * as execa from "execa";
 import { File as FileManager, File } from "./File";
 import { Manager } from "./Manager";
 import axios, { AxiosResponse } from "axios";
