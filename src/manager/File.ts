@@ -1,7 +1,9 @@
 import * as fs from "fs";
 import * as path from "path";
+import * as fse from "fs-extra";
 
 let axios = require("axios");
+let download = require("download");
 
 export class File {
     public static getFolders(folderPath: string) {
@@ -10,26 +12,14 @@ export class File {
         });
     }
 
-    public static async downloadAsset(url: string, filename: string, filepath: string): Promise<any> {
-        filepath = path.resolve(filepath, filename);
+    public static writeAsset(data: any, name: string, filepath: string): Promise<any> {
+        filepath = path.resolve(filepath, name);
 
-        let response = await axios({
-            method: "GET",
-            url: url,
-            responseType: "stream",
-        });
+        return fse.outputFile(filepath, data);
+    }
 
-        response.data.pipe(fs.createWriteStream(filepath));
-
-        return new Promise((resolve, reject) => {
-            response.data.on("end", () => {
-                resolve();
-            });
-
-            response.data.on("error", () => {
-                reject();
-            });
-        });
+    public static downloadAsset(url: string): Promise<any> {
+        return download(url);
     }
 
     public static getFiles(folderPath: string): Promise<any>  {
