@@ -4,7 +4,7 @@ import * as path from "path";
 import * as execa from "execa";
 import { File as FileManager, File } from "./File";
 import { Manager } from "./Manager";
-let axios = require("axios");
+import axios, { AxiosResponse } from "axios";
 let fileExists = require("file-exists");
 
 export class Installer  {
@@ -22,90 +22,62 @@ export class Installer  {
 
             let ember = "Ember";
             let chatbot = "ChatBotCE";
+            let assetUrl = "";
 
             axios("https://api.github.com/repos/MarkedBots/ChatBot-CE/releases/latest?callback")
-                .then((response: any) => {
+                .then((response: AxiosResponse) => {
                     deps[chatbot] = response.data.tag_name;
-                    console.log("Got the latest release of ChatBotCE. Looping through assets.");
+
                     response.data.assets.forEach((asset: any) => {
-                        console.log("Checking asset: " + asset.name);
                         if (isWin) {
                             if (asset.name.toLowerCase().indexOf("windows") > 0) {
-                                FileManager.downloadAsset(asset.browser_download_url, "ChatBotCE.exe", "./deps")
-                                    .catch(err => {
-                                        reject(err);
-                                    });
+                                assetUrl = asset.browser_download_url;
                             }
                         } else {
                             if (asset.name.toLowerCase().indexOf("linux") > 0) {
-                                FileManager.downloadAsset(asset.browser_download_url, "ChatBotCE", "./deps")
-                                    .then(() => {
-                                        return execa("chmod", ["+x", path.join(__dirname, "deps", "ChatBotCE")]);
-                                        //fs.chmodSync(path.join(__dirname, "deps", "ChatBotCE"), "755");
-                                    })
-                                    .then(result => {
-                                        console.log(result.stdout);
-                                    })
-                                    .catch(err => {
-                                        reject(err);
-                                    });
+                                assetUrl = asset.browser_download_url;
                             }
                         }
-
-                        if (asset.name.toLowerCase() === "env.example") {
-                            FileManager.downloadAsset(asset.browser_download_url, ".env", "./")
-                                .catch(err => {
-                                    reject(err);
-                                });
-                        }
                     });
 
-                    mkdirp("./addons", (err) => {
-                        if (err) {
-                            reject(err);
-                        }
-                    });
-
+                    return FileManager.downloadAsset(assetUrl);
+                })
+                .then((data: any) => {
+                    return FileManager.writeAsset(data, (isWin ? "ChatBotCE.exe" : "ChatBotCE"), "./deps");
+                })
+                .then(() => {
                     return axios("https://api.github.com/repos/BultApp/Ember/releases/latest?callback");
                 })
-                .then((response: any) => {
+                .then((response: AxiosResponse) => {
                     deps[ember] = response.data.tag_name;
-                    console.log("Got the latest release of Ember. Looping through assets.");
+
                     response.data.assets.forEach((asset: any) => {
-                        console.log("Checking asset: " + asset.name);
                         if (isWin) {
                             if (asset.name.toLowerCase().indexOf("windows") > 0) {
-                                FileManager.downloadAsset(asset.browser_download_url, "Ember.exe", "./deps")
-                                    .catch(err => {
-                                        reject(err);
-                                    });
+                                assetUrl = asset.browser_download_url;
                             }
                         } else {
                             if (asset.name.toLowerCase().indexOf("linux") > 0) {
-                                FileManager.downloadAsset(asset.browser_download_url, "Ember", "./deps")
-                                    .then(() => {
-                                        return execa("chmod", ["+x", path.join(__dirname, "deps", "Ember")]);
-                                        //fs.chmodSync(path.join(__dirname, "deps", "Ember"), "755");
-                                    })
-                                    .then(result => {
-                                        console.log(result.stdout);
-                                    })
-                                    .catch(err => {
-                                        reject(err);
-                                    });
+                                assetUrl = asset.browser_download_url;
                             }
                         }
                     });
 
+                    return FileManager.downloadAsset(assetUrl);
+                })
+                .then((data: any) => {
+                    return FileManager.writeAsset(data, (isWin ? "Ember.exe" : "Ember"), "./deps");
+                })
+                .then(() => {
                     return touch("./installed.lock");
                 })
                 .then(() => {
                     Manager.get().database().database().set("deps", deps).write();
 
-                    resolve(true);
+                    resolve();
                 })
-                .catch((err: any) => {
-                    reject(err);
+                .catch((error: any) => {
+                    reject(error);
                 });
         });
     }
