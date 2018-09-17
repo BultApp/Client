@@ -1,0 +1,25 @@
+extends layout.pug
+
+block content
+    h1.section-title
+        span JSON Files
+    ol.breadcrumb.text-left
+        li
+            a(href='/') Dashboard
+        li.active JSON Files
+
+    if running
+        .alert.alert-danger(role='alert')
+            | The bot is currently running. You can not edit these files while the bot is running.
+    else
+        table#files.table.pmd-table.table-hover.table-striped.display.responsive.nowrap.dataTable.no-footer.dtr-column.collapsed(cellspacing="0", width="100%", role="grid", style="width: 100%;")
+            thead
+                tr(role="row")
+                    th.sorting(tabindex="0", rowspan="1", colspan="1") Filename
+                    th(tabindex="0", rowspan="1", colspan="1") 
+            tbody
+                each file in files
+                    tr(role="row")
+                        td(width="100%") #{file}
+                        td
+                            a.btn.btn-sm.pmd-btn-raised.pmd-ripple-effect.btn-info(href="/json/edit?jsonFile=" + file) Edit File

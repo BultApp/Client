@@ -7,6 +7,7 @@ import { Addon } from "./routes/Addons";
 import { Install } from "./routes/Install";
 import { Bot } from "./routes/Bot";
 import { ServerMode } from "./routes/ServerMode";
+import { Json } from "./routes/Json";
 let upload = require("multer")();
 let app = require("express")();
 let toTime = require("to-time");
@@ -118,6 +119,10 @@ app.post("/install", upload.array(), Install.postInstall.bind(Install.postInstal
 
 app.post("/bot/start", upload.array(), Bot.postStart.bind(Bot.postStart));
 app.post("/bot/stop", upload.array(), Bot.postStop.bind(Bot.postStop));
+
+app.get("/json/index", Json.getJsonIndex.bind(Json.getJsonIndex));
+app.get("/json/edit", Json.getJsonEditor.bind(Json.getJsonEditor));
+app.post("/json/edit", Json.postJsonEditor.bind(Json.postJsonEditor));
 
 app.get("/addons", Addon.getAddons.bind(Addon.getAddons));
 app.post("/addons/remove", upload.array(), Addon.postRemove.bind(Addon.postRemove));

@@ -1,0 +1,60 @@
+extends layout.pug
+
+block head
+    link(rel='stylesheet', type='text/css', href='https://cdn.jsdelivr.net/npm/jsoneditor/dist/jsoneditor.min.css')
+    script(src='https://cdn.jsdelivr.net/npm/jsoneditor/dist/jsoneditor.min.js')
+
+block content
+    ul.list-unstyled.list-inline
+        li
+            h1.section-title
+                span JSON Editor
+            ol.breadcrumb.text-left
+                li
+                    a(href='/') Dashboard
+                li
+                    a(href='/json/index') JSON Files
+                li.active JSON Editor
+        li.pull-right
+            h1.section-title
+                if !running
+                    button.btn.pmd-btn-outline.pmd-ripple-effect.btn-success#saveJson(type="button") Save File
+
+    .alert.alert-success.alert-dismissible#savedAlert(style="display: none;", role='alert')
+        button.close(aria-label='Close', data-dismiss='alert', type='button')
+            span(aria-hidden='true') ×
+        |     The json file has been saved.
+    
+    if running
+        .alert.alert-danger(role='alert')
+            | The bot is currently running. You can not edit these files while the bot is running.
+    else 
+        #jsoneditor
+
+    script.
+        var container = document.getElementById('jsoneditor');
+        var options = {
+            mode: 'tree',
+            modes: ['code', 'form', 'text', 'tree', 'view'], // allowed modes
+            onError: function (err) {
+                alert(err.toString());
+            },
+            onModeChange: function (newMode, oldMode) {
+                console.log('Mode switched from', oldMode, 'to', newMode);
+            }
+        };
+
+        var json = !{JSON.stringify(fileData)}
+        var editor = new JSONEditor(container, options, json);
+
+        document.getElementById("saveJson").onclick = function() {
+            $.post("/json/edit", { jsonFile: "!{fileName}", jsonData: JSON.stringify(editor.getText())}).done((data) => {
+                if (data.saved) {
+                    $("#savedAlert").show();
+
+                    setTimeout(() => {
+                        $("#savedAlert").hide();
+                    }, 3500);
+                }
+            });
+        };
