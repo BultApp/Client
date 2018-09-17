@@ -32,28 +32,23 @@ export class File {
                 }
 
                 filenames.forEach((name) => {
-                    console.log("Reading file data for the file " + name + ".");
                     fs.readFile(path.join(folderPath, name), "utf-8", (err, content) => {
                         if (err) {
                             reject(err);
                         } 
 
-                        console.log("===============================");
-                        console.log("CONTENT FOR: " + name);
-                        console.log(content);
-                        console.log("===============================");
-
                         data[name] = content;
                     });
                 });
 
-                console.log("===============================");
-                console.log("DATA");
-                console.log(data);
-                console.log("===============================");
-
                 resolve(data);
             });
         });
+    }
+
+    public static getFileNames(folderPath: string): Array<string> {
+        let filenames = fs.readdirSync(folderPath);
+
+        return filenames;
     }
 }
