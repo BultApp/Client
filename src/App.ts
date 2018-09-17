@@ -134,6 +134,6 @@ app.listen(database.config().port, () => {
     });
 
     if (!manager.database().config().serverMode.active) {
-        opn(ipAddr);
+        //opn(ipAddr);
     }
 });
