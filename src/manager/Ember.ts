@@ -86,12 +86,13 @@ export class EmberAddon {
         this.ember = emberManager;
     }
 
-    public install(url: string, filename: string, path: string): Promise<any> {
+    public install(url: string, filename: string, path: string, headers: any = null): Promise<any> {
         return new Promise((resolve, reject) => {
             axios.post(this.ember.emberURL + "/addon/install", {
                 url: url,
                 filename: filename,
-                extractTo: path
+                extractTo: path,
+                authorizationHeader: headers ? headers.Authorization : null
             }).then((response: any) => {
                 if (response.data.error) {
                     reject(response.data.message);
