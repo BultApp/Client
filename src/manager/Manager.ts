@@ -4,6 +4,7 @@ import { Ember } from "./Ember";
 import { Process } from "./Process";
 import { Database } from "./Database";
 import { IP } from "./IP";
+import { Bult } from "./Bult";
 
 export class Manager {
     private static instance: Manager = null;
@@ -14,6 +15,7 @@ export class Manager {
     private processManager: Process;
     private databaseManager: Database;
     private ipManager: IP;
+    private bultManager: Bult;
 
     public static get(): Manager {
         return this.instance;
@@ -31,6 +33,7 @@ export class Manager {
         this.installerManager = new Installer();
         this.emberManager = new Ember();
         this.processManager = new Process(this.emberManager);
+        this.bultManager = new Bult(this.databaseManager);
         
         Manager.instance = this;
     }
@@ -57,5 +60,9 @@ export class Manager {
 
     public ip() {
         return this.ipManager;
+    }
+
+    public bult() {
+        return this.bultManager;
     }
 }
