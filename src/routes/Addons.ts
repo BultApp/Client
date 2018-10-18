@@ -12,10 +12,10 @@ export class Addon {
             return res.redirect("/addons?failed=true&badURL=true");   
         }
     
-        let filename = (new Date().valueOf().toString());
+        let filename = req.body.addonName ? req.body.addonName : (new Date().valueOf().toString());
         let addonpath = Manager.get().bot().env().ADDON_FOLDER;
      
-        Manager.get().ember().addon().install(req.body.zipURL, filename, process.cwd() + "/" + addonpath)
+        Manager.get().ember().addon().install(req.body.zipURL, filename, process.cwd() + "/" + addonpath, (req.body.addonName ? Manager.get().bult().headers : null))
             .then((message) => {
                 console.log(message);
     
@@ -62,5 +62,21 @@ export class Addon {
             title: "Addons",
             addons: addons,
         });
+    }
+
+    public static searchBult(req: express.Request, res: express.Response, next: express.NextFunction) {
+        Manager.get().bult().search(req.body.searchQuery)
+                .then((response: any) => {
+                    res.render("bult/search", {
+                        title: "Bult Addon Search",
+                        bultResponse: response.data,
+                    });
+                })
+                .catch((error: any) => {
+                    res.render("bult/search", {
+                        title: "Bult Addon Search",
+                        bultError: error,
+                    });
+                });
     }
 }
