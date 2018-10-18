@@ -125,6 +125,7 @@ app.get("/json/edit", Json.getJsonEditor.bind(Json.getJsonEditor));
 app.post("/json/edit", Json.postJsonEditor.bind(Json.postJsonEditor));
 
 app.get("/addons", Addon.getAddons.bind(Addon.getAddons));
+app.post("/addons/bult/search", Addon.searchBult.bind(Addon.searchBult));
 app.post("/addons/remove", upload.array(), Addon.postRemove.bind(Addon.postRemove));
 app.post("/addons/ember/install", upload.array(), Addon.postEmberInstall.bind(Addon.postEmberInstall));
 
