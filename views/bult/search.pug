@@ -1,4 +1,4 @@
-extends layout.pug
+extends ../layout.pug
 
 block content
     ul.list-unstyled.list-inline
@@ -45,22 +45,24 @@ block content
     table#addons.table.pmd-table.table-hover.table-striped.display.responsive.nowrap.dataTable.no-footer.dtr-column.collapsed(cellspacing="0", width="100%", role="grid", aria-describedby="example_info", style="width: 100%;")
         thead
             tr(role="row")
-                th.sorting(tabindex="0", rowspan="1", colspan="1") ID (Folder)
+                th.sorting(tabindex="0", rowspan="1", colspan="1") Name
                 th.sorting(tabindex="0", rowspan="1", colspan="1") Version
                 th.sorting(tabindex="0", rowspan="1", colspan="1") Author
-                th.sorting(tabindex="0", rowspan="1", colspan="1") Entry Script
+                th.sorting(tabindex="0", rowspan="1", colspan="1") Summary
                 th(tabindex="0", rowspan="1", colspan="1") 
         tbody
-            each addon, key in addons
+            each addon, key in bultResponse.data
                 tr(role="row")
-                    td #{addon["name"]} ("<i>/#{key}</i>")
-                    td #{addon["version"]}
-                    td #{addon["author"]}
-                    td #{addon["main"]}
+                    td #{addon.name}
+                    td #{addon.tags.latest}
+                    td #{addon.user}
+                    td #{addon.description.summary}
                     td
-                        form(method="POST", action="/addons/remove")
-                            input#addonFolder(name="addonFolder", style="display:none;", type="text", value=key)
-                            button.btn.btn-sm.pmd-btn-raised.pmd-ripple-effect.btn-danger(type="submit") Remove
+                        form(method="POST", action="/addons/ember/install")
+                            input#zipURL(name="zipURL", style="display:none;", type="text", value=addon.dist.download)
+                            input#addonName(name="addonName", style="display:none;", type="text", value=addon.name)
+                            button.btn.btn-sm.pmd-btn-raised.pmd-ripple-effect.btn-info(type="submit") Install
+
 
     script.
-        console.log(!{JSON.stringify(addons)})
+        console.log(!{JSON.stringify(bultResponse)})
