@@ -14,12 +14,12 @@ export class Bult {
         };
 
         this.req = axios.create({
-            baseURL: "https://bult.test",
+            baseURL: "https://bult.app",
             headers: this.headers
         });
     }
 
     public search(query: string): any {
-        return axios.get(`https://bult.test/api-registry/v1/search?s=${encodeURI(query)}`, { headers: this.headers });
+        return axios.get(`https://bult.app/api-registry/v1/search?s=${encodeURI(query)}`, { headers: this.headers });
     }
 }

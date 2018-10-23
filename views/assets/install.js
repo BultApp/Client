@@ -13,7 +13,7 @@ $firstButton.on("click", (e) => {
     if ($email.val().length > 0 && $password.val().length > 0) {
         axios({
             method: "POST",
-            url: "https://bult.test/api-auth/v1/login",
+            url: "https://bult.app/api-auth/v1/login",
             data: {
                 email: $email.val(),
                 password: $password.val()
